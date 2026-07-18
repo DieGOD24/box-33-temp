@@ -1,0 +1,169 @@
+@import 'tailwindcss';
+
+@theme {
+  /* ── BOX33 palette (from the design handoff) ─────────────────────────── */
+  --color-carbon: #191a15;
+  --color-carbon-deep: #0d0e0a;
+  --color-carbon-soft: #15160f;
+  --color-surface: #181912;
+  --color-surface-dark: #101109;
+  --color-bone: #f2f0eb;
+  --color-moss: #a8b570;
+  --color-moss-bright: #c4d18c;
+  --color-olive: #5c662f;
+  --color-olive-deep: #4a5230;
+  --color-gold: #c9a648;
+  --color-ember: #ff5a3c;
+  --color-wa: #25d366;
+  --color-paper: #efede2;
+  --color-chalk: #f7f5ec;
+  --color-frame: #3a3b33;
+  --color-crimson: #b3403a;
+  --color-steel: #454a50;
+  --color-silver: #b6bcc4;
+  --color-bronze: #b07a45;
+
+  /* ── Fonts (variables injected by next/font in the root layout) ──────── */
+  --font-display: var(--font-anton);
+  --font-body: var(--font-barlow);
+  --font-condensed: var(--font-barlow-condensed);
+  --font-marker: var(--font-permanent-marker);
+  --font-led: var(--font-chakra-petch);
+
+  /* ── Animations ──────────────────────────────────────────────────────── */
+  --animate-hero-up: heroUp 0.7s ease both;
+  --animate-wa-pulse: waPulse 2.6s ease-in-out infinite;
+  --animate-marquee: marquee 22s linear infinite;
+  --animate-led-glow: ledGlow 3.2s ease-in-out infinite;
+  --animate-bolt-glow: boltGlow 3.4s ease-in-out infinite;
+  --animate-float-y: floatY 5s ease-in-out 1s infinite;
+  --animate-shine: shine 4.8s ease-in-out infinite;
+  --animate-live-pulse: livePulse 2s ease-out infinite;
+}
+
+@keyframes heroUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes waPulse {
+  0%,
+  100% {
+    box-shadow: 0 6px 24px rgba(37, 211, 102, 0.45);
+  }
+  50% {
+    box-shadow: 0 6px 34px rgba(37, 211, 102, 0.75);
+  }
+}
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes ledGlow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.82;
+  }
+}
+@keyframes boltGlow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.65))
+      drop-shadow(0 0 30px rgba(255, 255, 255, 0.25));
+  }
+  50% {
+    filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.9))
+      drop-shadow(0 0 44px rgba(255, 255, 255, 0.35));
+  }
+}
+@keyframes floatY {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1.6deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(-1.6deg);
+  }
+}
+@keyframes shine {
+  0% {
+    transform: translateX(-140%) skewX(-18deg);
+  }
+  60%,
+  100% {
+    transform: translateX(240%) skewX(-18deg);
+  }
+}
+@keyframes livePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 90, 60, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 9px rgba(255, 90, 60, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 90, 60, 0);
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--color-carbon);
+  color: var(--color-bone);
+  font-family: var(--font-body), sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--color-moss);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--color-moss-bright);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid var(--color-olive);
+  outline-offset: 0;
+}
+
+/* Scroll-reveal helper — .is-visible added by the Reveal client component. */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

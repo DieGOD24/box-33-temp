@@ -1,0 +1,114 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# PRODUCTION stack for BOX33 (single-host docker compose).
+#
+#   docker compose -f docker-compose.prod.yml up -d
+#
+# Required env (no fallbacks — compose interpolation fails loudly if unset):
+#   DB_PASSWORD, JWT_SECRET, ADMIN_EMAIL, ADMIN_PASSWORD, REVALIDATION_SECRET,
+#   NEXT_PUBLIC_SITE_URL
+# Optional: WOMPI_* keys (checkout stays disabled without them).
+# Images come from ghcr.io (published + cosign-signed by publish.yml).
+# ─────────────────────────────────────────────────────────────────────────────
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: '10m'
+    max-file: '3'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: box33
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      POSTGRES_DB: box33
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U box33 -d box33']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    mem_limit: 1g
+    mem_reservation: 512m
+    cpus: 1.0
+    stop_grace_period: 30s
+    logging: *default-logging
+    networks: [backend]
+
+  api:
+    image: ${API_IMAGE:-ghcr.io/juandagarc/box33-api:latest}
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      FRONTEND_URL: ${NEXT_PUBLIC_SITE_URL:?NEXT_PUBLIC_SITE_URL is required}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: box33
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      DB_NAME: box33
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?ADMIN_EMAIL is required}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?ADMIN_PASSWORD is required}
+      WOMPI_PUBLIC_KEY: ${WOMPI_PUBLIC_KEY:-}
+      WOMPI_PRIVATE_KEY: ${WOMPI_PRIVATE_KEY:-}
+      WOMPI_INTEGRITY_SECRET: ${WOMPI_INTEGRITY_SECRET:-}
+      WOMPI_EVENTS_SECRET: ${WOMPI_EVENTS_SECRET:-}
+      WEB_URL: http://web:3000
+      REVALIDATION_SECRET: ${REVALIDATION_SECRET:?REVALIDATION_SECRET is required}
+    volumes:
+      - api_uploads:/app/data/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:3001/api/health/live > /dev/null || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+    mem_limit: 768m
+    mem_reservation: 256m
+    cpus: 1.0
+    stop_grace_period: 30s
+    logging: *default-logging
+    networks: [backend]
+
+  web:
+    image: ${WEB_IMAGE:-ghcr.io/juandagarc/box33-web:latest}
+    restart: always
+    environment:
+      NODE_ENV: production
+      API_URL: http://api:3001
+      NEXT_PUBLIC_SITE_NAME: ${NEXT_PUBLIC_SITE_NAME:-BOX33}
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?NEXT_PUBLIC_SITE_URL is required}
+      NEXT_PUBLIC_DEFAULT_LOCALE: ${NEXT_PUBLIC_DEFAULT_LOCALE:-es}
+      REVALIDATION_SECRET: ${REVALIDATION_SECRET:?REVALIDATION_SECRET is required}
+    ports:
+      - '3000:3000'
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:3000/api/health > /dev/null || exit 1']
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 1.0
+    logging: *default-logging
+    networks: [backend]
+
+volumes:
+  postgres_data:
+  api_uploads:
+
+networks:
+  backend:
+    driver: bridge

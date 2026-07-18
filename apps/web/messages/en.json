@@ -1,0 +1,434 @@
+{
+  "metadata": {
+    "title": "BOX33 CrossFit · Community, strength and discipline",
+    "description": "Your first class is free. Train CrossFit at BOX33: daily WOD, weekly challenges, community and an imported sportswear store. #Crececonnosotros",
+    "storeTitle": "The Rack · BOX33 Store",
+    "storeDescription": "Imported sportswear. Tops, shorts, tees and training shorts. Pay online or order via WhatsApp and pick up at the box."
+  },
+  "common": {
+    "siteName": "BOX33",
+    "loading": "Loading…",
+    "error": "Something went wrong. Try again.",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "language": "Language",
+    "spanish": "Español",
+    "english": "English"
+  },
+  "nav": {
+    "home": "Home",
+    "wod": "WOD",
+    "challenge": "Challenge",
+    "plans": "Plans",
+    "podium": "Podium",
+    "schedule": "Schedule",
+    "store": "Store",
+    "contact": "Contact",
+    "freeClass": "Free class"
+  },
+  "hero": {
+    "badge": "Your first class is free",
+    "motto": "Community · Strength · Discipline",
+    "logoAlt": "BOX33 CrossFit",
+    "form": {
+      "liveBadge": "Spots open",
+      "title": "Pre-register today",
+      "subtitle": "Leave us your info, pick your goal and see the plan that fits you. No experience needed — every WOD scales to your level.",
+      "nameLabel": "Name",
+      "namePlaceholder": "What's your name?",
+      "phoneLabel": "WhatsApp",
+      "phonePlaceholder": "Your number",
+      "goalLabel": "Your goal",
+      "submit": "See plans",
+      "footBefore": "Your first class is",
+      "footFree": "free",
+      "footOr": "· or",
+      "footStore": "visit the store"
+    }
+  },
+  "goals": {
+    "strength": "Build strength and muscle",
+    "weight-loss": "Lose weight",
+    "conditioning": "Improve conditioning",
+    "compete": "Compete",
+    "wellness": "Health and wellness"
+  },
+  "marquee": {
+    "freeClass": "First class free",
+    "openBox": "Open box 10:30 AM – 1:00 PM",
+    "apparel": "Imported sportswear",
+    "hashtag": "#Crececonnosotros"
+  },
+  "plans": {
+    "kicker": "Pick your plan",
+    "title": "A place in the tribe",
+    "subtitle": "No lock-in. Switch plans whenever you want — what matters is that you keep showing up.",
+    "popular": "The favorite",
+    "cta": "Pre-register",
+    "unit": {
+      "class": "per class",
+      "month": "per month",
+      "quarter": "per 3 months"
+    },
+    "waMessage": "Hi BOX33! I want to pre-register.{name} I'm interested in the {plan} plan ({price}). My goal: {goal}."
+  },
+  "live": {
+    "nextClassIn": "Next class in",
+    "inClass": "Class in progress",
+    "openBox": "Open box now",
+    "closed": "Box closed now",
+    "checkSchedule": "Check the schedule",
+    "today": "Today",
+    "tomorrow": "Tomorrow"
+  },
+  "wod": {
+    "kicker": "The board",
+    "title": "Today's WOD",
+    "description": "Every day the coach writes a different workout on the board. The WOD is the same for everyone — the load is yours.",
+    "cta": "Come try it today",
+    "signature": "— the coach",
+    "waMessage": "Hi BOX33! I'd like to book my free trial class."
+  },
+  "challenge": {
+    "badge": "Challenge of the week",
+    "goalLabel": "The target",
+    "prizeLabel": "The winner takes",
+    "cta": "Challenge accepted",
+    "waMessage": "Hi BOX33! I want to take on this week's challenge: {title}. How do I log it?"
+  },
+  "schedule": {
+    "kicker": "Monday to Friday",
+    "title": "Schedule",
+    "subtitle": "Just like the box timer: arrive 10 minutes early, the clock waits for no one.",
+    "morning": "Morning",
+    "evening": "Afternoon & evening",
+    "guidedClass": "Coached class",
+    "openBox": "Open Box",
+    "openBoxDescription": "Train on your own, at your pace, with all the box equipment."
+  },
+  "benefits": {
+    "kicker": "What is CrossFit?",
+    "title": "Every day is different",
+    "items": {
+      "efficiency": {
+        "title": "Maximum efficiency",
+        "description": "Real results in less time: high intensity fires up your metabolism. Fewer hours, more impact."
+      },
+      "variety": {
+        "title": "Goodbye monotony",
+        "description": "A different WOD every day mixing weights, cardio and gymnastics. Never bored, always challenged."
+      },
+      "strength": {
+        "title": "Strength for life",
+        "description": "Squat, carry, push, jump: you build a strong, agile, resilient body for real life."
+      },
+      "tribe": {
+        "title": "The power of the tribe",
+        "description": "You train with people who back your process. Here you compete with yourself, never against others."
+      }
+    }
+  },
+  "featured": {
+    "kicker": "Imported sportswear",
+    "title": "The Rack",
+    "viewAll": "See the full catalog →",
+    "viewItem": "View item"
+  },
+  "podium": {
+    "kicker": "Wall of the month",
+    "title": "Podium of the month",
+    "mentions": "Honorable mentions",
+    "photoAlt": "Photo of {name}"
+  },
+  "community": {
+    "kicker": "The community",
+    "title": "This is lived inside",
+    "live": "Live from the box",
+    "postAlt": "BOX33 Instagram post"
+  },
+  "contact": {
+    "kicker": "Your first class is free",
+    "title": "Become part of<br></br>this family",
+    "description": "Message us on WhatsApp and book your trial class. No experience needed — every class adapts to your level.",
+    "photoCaption": "the tribe of 33",
+    "photoAlt": "BOX33 community photo"
+  },
+  "footer": {
+    "hours": "Monday to Friday · 5:30 AM – 8:30 PM · #Crececonnosotros",
+    "adminPanel": "Coach panel",
+    "logoAlt": "BOX33"
+  },
+  "whatsapp": {
+    "trial": "Hi BOX33! I'd like to book my free trial class.",
+    "catalog": "Hi BOX33! I'm looking for a garment, can you help me?",
+    "product": "Hi BOX33! I'm interested in: {name} ({tag}{price}). What sizes are available?",
+    "productOrder": "Hi BOX33! I want to order: {name} ({tag}{size}{price}). Is it available?",
+    "productRestock": "Hi BOX33! I saw that {name} is sold out. Can you let me know when it's back?",
+    "ariaLabel": "WhatsApp"
+  },
+  "store": {
+    "breadcrumbHome": "Home",
+    "breadcrumbStore": "Store",
+    "title": "The Rack",
+    "subtitle": "Imported sportswear. Pay online or order via WhatsApp and pick up at the box.",
+    "resultCount": "{count, plural, =1 {1 ITEM} other {# ITEMS}}",
+    "searchPlaceholder": "Search: nike, top, shorts…",
+    "filterAll": "All",
+    "filterWomen": "Women",
+    "filterMen": "Men",
+    "tagWomen": "Women",
+    "tagMen": "Men",
+    "categoryAll": "All",
+    "categoryTops": "Tops",
+    "categoryShorts": "Shorts",
+    "categoryTshirts": "Tees",
+    "categoryShorts2": "Training shorts",
+    "soldOut": "SOLD OUT",
+    "askPrice": "Ask for price",
+    "viewItem": "View item",
+    "orderWhatsApp": "Order via WhatsApp",
+    "prev": "← Previous",
+    "next": "Next →",
+    "pageInfo": "Showing {from}–{to} of {total} · page {page} of {pages}",
+    "emptyTitle": "Nothing here",
+    "emptyDescription": "We couldn't find items for that search. Try another word or ask us directly.",
+    "emptyCta": "Ask on WhatsApp",
+    "detail": {
+      "description": "Imported garment, limited units. Pay online and pick it up at the box, or confirm size and availability via WhatsApp.",
+      "sizePrompt": "Pick your size (optional)",
+      "sizeChosen": "Chosen size: {size}",
+      "addToCart": "Add to cart",
+      "buyNow": "Buy now",
+      "orderCta": "Order via WhatsApp",
+      "notifyCta": "Notify me when it's back",
+      "keepLooking": "← Keep looking",
+      "related": "Also on the rack",
+      "notFound": "Item not found",
+      "backToStore": "← Back to the store",
+      "addedToCart": "{name} added to the cart"
+    }
+  },
+  "cart": {
+    "title": "Your order",
+    "empty": "Your cart is empty",
+    "emptyCta": "Go to the store",
+    "size": "Size {size}",
+    "noSize": "No size",
+    "remove": "Remove",
+    "total": "Total",
+    "checkout": "Checkout",
+    "continueShopping": "Keep shopping",
+    "itemCount": "{count, plural, =1 {1 item} other {# items}}",
+    "openCart": "Open cart"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "summary": "Your order",
+    "nameLabel": "Full name",
+    "namePlaceholder": "What's your name?",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@email.com",
+    "phoneLabel": "WhatsApp",
+    "phonePlaceholder": "Your number",
+    "payCta": "Pay with Wompi",
+    "processing": "Creating your payment…",
+    "pickupNote": "You pay online with Wompi (card, PSE, Nequi) and pick up your order at the box.",
+    "unavailable": "Online payment is unavailable right now. Order via WhatsApp and we'll sort everything out there.",
+    "unavailableCta": "Order via WhatsApp",
+    "waFallbackMessage": "Hi BOX33! I want to order: {items}. How do we arrange payment?",
+    "errors": {
+      "empty": "Your cart is empty.",
+      "failed": "We couldn't create the payment. Try again or order via WhatsApp."
+    },
+    "result": {
+      "checking": "Confirming your payment…",
+      "approvedTitle": "Payment confirmed!",
+      "approvedDescription": "Your order is registered. We'll contact you on WhatsApp to arrange pickup at the box. 💪",
+      "pendingTitle": "Payment in progress",
+      "pendingDescription": "Wompi is confirming your transaction. This page refreshes automatically.",
+      "declinedTitle": "Payment declined",
+      "declinedDescription": "Your payment wasn't approved. You can try again or order via WhatsApp.",
+      "expiredTitle": "Payment expired",
+      "expiredDescription": "The payment session expired. Go back to the store and try again.",
+      "reference": "Reference: {reference}",
+      "backToStore": "Back to the store",
+      "retry": "Try again"
+    }
+  },
+  "admin": {
+    "login": {
+      "title": "Coach panel",
+      "subtitle": "Sign in to update the site, the board and the store.",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "submit": "Sign in",
+      "error": "Wrong email or password.",
+      "logoAlt": "BOX33"
+    },
+    "nav": {
+      "overview": "Overview",
+      "wod": "Board · WOD",
+      "challenge": "Weekly challenge",
+      "podium": "Podium of the month",
+      "plans": "Plans",
+      "schedule": "Schedule",
+      "inventory": "Inventory",
+      "orders": "Orders",
+      "leads": "Pre-registrations",
+      "settings": "Settings",
+      "viewSite": "← View site",
+      "logout": "Log out",
+      "today": "Today",
+      "badge": "Coach panel"
+    },
+    "overview": {
+      "title": "Overview",
+      "productsTotal": "Published items",
+      "productsAvailable": "Available",
+      "productsSoldOut": "Sold out",
+      "orders": "Paid orders",
+      "revenue": "Total sales",
+      "leads": "Pre-registrations",
+      "recentOrders": "Latest orders",
+      "noOrders": "No orders yet. When someone pays in the store with Wompi, it shows up here.",
+      "recentLeads": "Latest pre-registrations",
+      "noLeads": "No pre-registrations yet. When someone leaves their info on the homepage, it's logged here.",
+      "quickActions": "Quick actions",
+      "goWod": "Write today's WOD →",
+      "goChallenge": "Change the weekly challenge →",
+      "goPodium": "Update the monthly podium →",
+      "goPlans": "Update plan pricing →",
+      "goInventory": "Update inventory →",
+      "goSchedule": "Change the schedule →"
+    },
+    "wod": {
+      "title": "The board",
+      "subtitle": "What you write here is published as-is in the \"Today's WOD\" section.",
+      "titleLabel": "WOD title",
+      "textLabel": "Workout",
+      "preview": "This is how it looks on the site"
+    },
+    "challenge": {
+      "title": "Weekly challenge",
+      "subtitle": "Change it every Monday. It shows in the site's \"Challenge of the week\" section.",
+      "titleLabel": "Challenge title",
+      "descriptionLabel": "Description",
+      "goalLabel": "The target",
+      "prizeLabel": "Prize",
+      "preview": "This is how it looks on the site"
+    },
+    "podium": {
+      "title": "Podium of the month",
+      "subtitle": "Recognize those who trained the most. Upload a photo for each place.",
+      "monthLabel": "Month",
+      "monthPlaceholder": "E.g.: March",
+      "nameLabel": "Name",
+      "namePlaceholder": "Name",
+      "achievementLabel": "Achievement",
+      "achievementPlaceholder": "Achievement · e.g.: 22 WODs · 4 PRs",
+      "photoLabel": "Photo",
+      "uploadPhoto": "Upload photo",
+      "mentionsLabel": "Honorable mentions",
+      "mentionsHelp": "Separate each person with a comma and use · between name and achievement. E.g.: Juan S. · 18 WODs, Sara P. · +12 kg clean",
+      "place1": "1",
+      "place2": "2",
+      "place3": "3"
+    },
+    "plans": {
+      "title": "Plans",
+      "subtitle": "Update each plan. It reflects instantly in the site's \"Pick your plan\" section.",
+      "nameLabel": "Name",
+      "taglineLabel": "Short description",
+      "priceLabel": "Price (COP)",
+      "unitLabel": "Unit",
+      "featuresLabel": "Features (one per line)",
+      "popularLabel": "Mark as \"The favorite\""
+    },
+    "schedule": {
+      "title": "Schedule",
+      "subtitle": "Separate times with commas. The site board updates instantly.",
+      "morningLabel": "Morning classes (AM)",
+      "eveningLabel": "Afternoon & evening classes (PM)",
+      "openBoxStartLabel": "Open box · start",
+      "openBoxEndLabel": "Open box · end",
+      "preview": "Preview"
+    },
+    "inventory": {
+      "title": "Inventory",
+      "subtitle": "Set the price and mark sold out — the store updates instantly.",
+      "searchPlaceholder": "Search item…",
+      "newProduct": "New item",
+      "nameLabel": "Name",
+      "genderLabel": "Gender",
+      "categoryLabel": "Category",
+      "priceLabel": "Price (COP)",
+      "priceHelp": "Leave empty to show \"Ask for price\" (WhatsApp orders only)",
+      "imageLabel": "Photo",
+      "uploadImage": "Upload photo",
+      "featuredLabel": "Feature on the homepage",
+      "activeLabel": "Visible in the store",
+      "soldOut": "Sold out",
+      "available": "Available",
+      "create": "Create item",
+      "deleteConfirm": "Delete this item? This action cannot be undone.",
+      "empty": "No items match that search."
+    },
+    "orders": {
+      "title": "Orders",
+      "subtitle": "Purchases paid with Wompi in the store.",
+      "reference": "Reference",
+      "customer": "Customer",
+      "items": "Items",
+      "total": "Total",
+      "status": "Status",
+      "date": "Date",
+      "statusPaid": "Paid",
+      "statusDelivered": "Delivered",
+      "statusCancelled": "Cancelled",
+      "markDelivered": "Mark delivered",
+      "empty": "No paid orders yet.",
+      "payments": "Payment attempts",
+      "paymentStatus": {
+        "PENDING": "Pending",
+        "CONFIRMED": "Confirmed",
+        "FAILED": "Failed",
+        "CANCELLED": "Cancelled",
+        "EXPIRED": "Expired"
+      }
+    },
+    "leads": {
+      "title": "Pre-registrations",
+      "subtitle": "People who left their info in the homepage form.",
+      "name": "Name",
+      "phone": "WhatsApp",
+      "goal": "Goal",
+      "date": "Date",
+      "clear": "Clear",
+      "clearConfirm": "Delete all pre-registrations?",
+      "empty": "No pre-registrations yet.",
+      "contact": "Message"
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Every WhatsApp button on the site uses this number.",
+      "whatsappLabel": "WhatsApp number (with country code)",
+      "instagramLabel": "Instagram handle (without @)",
+      "testLink": "Test the link"
+    }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or has moved.",
+    "cta": "← Back to home"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Try reloading the page.",
+    "retry": "Retry"
+  }
+}

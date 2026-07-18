@@ -1,0 +1,52 @@
+version: 2
+# Policy: Dependabot proposes ONLY minor/patch updates, grouped into one PR per
+# ecosystem. Major bumps are ignored — they tend to break CI (e.g. a node major
+# dropping corepack) and are done deliberately by hand.
+updates:
+  # ── App + tooling dependencies (pnpm workspace root) ──────────────────────
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      npm:
+        patterns: ['*']
+        update-types: [minor, patch]
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+    labels: ['dependencies']
+
+  # ── GitHub Actions — one grouped PR (keeps SHA pins fresh) ────────────────
+  - package-ecosystem: github-actions
+    directory: '/'
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      github-actions:
+        patterns: ['*']
+        update-types: [minor, patch]
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+    labels: ['dependencies', 'ci']
+
+  # ── Dockerfiles (both apps in a single entry → one grouped PR) ────────────
+  - package-ecosystem: docker
+    directories:
+      - '/apps/api'
+      - '/apps/web'
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 2
+    groups:
+      docker:
+        patterns: ['*']
+        update-types: [minor, patch]
+    ignore:
+      # node major jumps drop corepack (used by the Dockerfiles) → break builds.
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+    labels: ['dependencies', 'docker']

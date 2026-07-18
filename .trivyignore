@@ -1,0 +1,3 @@
+# Time-boxed CVE allowlist for the publish.yml Trivy gate.
+# Add entries as `CVE-XXXX-YYYYY` with an expiry comment; remove when the
+# upstream fix lands. Empty = nothing ignored.

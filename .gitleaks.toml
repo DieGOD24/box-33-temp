@@ -1,0 +1,25 @@
+title = "box33 gitleaks config"
+
+# Use gitleaks' built-in ruleset, then allowlist documented NON-secrets:
+# dev fallbacks and CI test values. Real secrets anywhere else still fail.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Documented dev fallbacks and CI test values — not real secrets."
+paths = [
+  '''docker-compose\.yml''',
+  '''docker-compose\.prod\.yml''',
+  '''\.github/workflows/.*\.ya?ml''',
+  '''apps/api/src/seed/seed\.service\.ts''',
+  '''.*\.(test|spec)\.(ts|tsx)''',
+  '''.*\.env\.example''',
+]
+regexes = [
+  # dev fallback secrets (intentionally weak; prod refuses to boot with them)
+  '''dev-only-secret-not-for-production''',
+  '''dev-revalidation-secret-min-32-characters-long''',
+  # CI-only test values
+  '''ci-[a-z0-9-]*secret[a-z0-9-]*''',
+  '''ci-integration-secret-not-for-prod-0123456789''',
+]

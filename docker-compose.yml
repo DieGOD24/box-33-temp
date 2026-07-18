@@ -1,0 +1,110 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# LOCAL DEVELOPMENT stack for BOX33.
+#
+# ⚠️  NOT for production use. For production see docker-compose.prod.yml.
+#
+#   postgres  → database (port 5433 on host → 5432 in container)
+#   api       → NestJS REST API (port 3001)
+#   web       → Next.js frontend (port 3000)
+#
+# Run with:  docker compose up --build
+# Open:
+#   Web:      http://localhost:3000
+#   API docs: http://localhost:3001/api/docs
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: box33
+      POSTGRES_PASSWORD: box33
+      POSTGRES_DB: box33
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      # Host 5433 → container 5432 to avoid clashing with a local postgres
+      - '5433:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U box33 -d box33']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks: [backend]
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      # Dev fallback — intentionally weak. In production the API refuses to start
+      # if JWT_SECRET equals this value. Set a real secret via .env or shell for prod.
+      JWT_SECRET: ${JWT_SECRET:-dev-only-secret-not-for-production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-box33}
+      DB_PASSWORD: ${DB_PASSWORD:-box33}
+      DB_NAME: ${DB_NAME:-box33}
+      # DB_SYNCHRONIZE=true lets the ORM create the schema on first boot in dev.
+      DB_SYNCHRONIZE: ${DB_SYNCHRONIZE:-true}
+      # Seeded owner login for the dashboard (change in prod!)
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-coach@box33.fit}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-box33-dev-password}
+      # Wompi (sandbox keys for dev; without them checkout returns 503 and the
+      # store falls back to WhatsApp ordering)
+      WOMPI_PUBLIC_KEY: ${WOMPI_PUBLIC_KEY:-}
+      WOMPI_PRIVATE_KEY: ${WOMPI_PRIVATE_KEY:-}
+      WOMPI_INTEGRITY_SECRET: ${WOMPI_INTEGRITY_SECRET:-}
+      WOMPI_EVENTS_SECRET: ${WOMPI_EVENTS_SECRET:-}
+      # On-demand ISR revalidation hook (API → web)
+      WEB_URL: http://web:3000
+      REVALIDATION_SECRET: ${REVALIDATION_SECRET:-dev-revalidation-secret-min-32-characters-long}
+    volumes:
+      - api_uploads:/app/data/uploads
+    ports:
+      - '3001:3001'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:3001/api/health > /dev/null || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks: [backend]
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        API_URL: http://api:3001
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      API_URL: http://api:3001
+      NEXT_PUBLIC_SITE_NAME: ${NEXT_PUBLIC_SITE_NAME:-BOX33}
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+      NEXT_PUBLIC_DEFAULT_LOCALE: ${NEXT_PUBLIC_DEFAULT_LOCALE:-es}
+      REVALIDATION_SECRET: ${REVALIDATION_SECRET:-dev-revalidation-secret-min-32-characters-long}
+    ports:
+      - '3000:3000'
+    depends_on:
+      api:
+        condition: service_started
+    networks: [backend]
+
+volumes:
+  postgres_data:
+  api_uploads:
+
+networks:
+  backend:
+    driver: bridge

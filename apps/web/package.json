@@ -1,0 +1,45 @@
+{
+  "name": "@box33/web",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "e2e": "playwright test",
+    "clean": "rm -rf .next"
+  },
+  "dependencies": {
+    "@box33/types": "workspace:*",
+    "clsx": "^2.1.1",
+    "jose": "^5.9.6",
+    "lucide-react": "^0.577.0",
+    "next": "16.2.10",
+    "next-intl": "^4.13.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sonner": "^1.7.1"
+  },
+  "devDependencies": {
+    "@box33/typescript-config": "workspace:*",
+    "@playwright/test": "^1.61.1",
+    "@tailwindcss/postcss": "^4.3.2",
+    "@types/node": "^22.20.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^6.0.3",
+    "@vitest/coverage-v8": "^4.1.10",
+    "eslint": "^9.17.0",
+    "eslint-config-next": "16.2.10",
+    "prettier-plugin-tailwindcss": "^0.8.0",
+    "tailwindcss": "^4.3.2",
+    "typescript": "^5.6.3",
+    "vite": "^8.1.3",
+    "vitest": "^4.1.10"
+  }
+}

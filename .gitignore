@@ -1,0 +1,48 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Builds
+.next
+dist
+build
+.turbo
+out
+
+# Env — keep the examples, never the real values
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logs
+*.log
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+*.swp
+
+# Tests
+coverage
+.nyc_output
+playwright-report
+test-results
+
+# Misc
+*.tsbuildinfo
+.claude/worktrees/
+
+# Design handoff bundle (imported, kept out of the app tree)
+handoff/
+
+# API local uploads (dev)
+apps/api/data

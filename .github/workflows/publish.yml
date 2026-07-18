@@ -1,0 +1,344 @@
+name: Publish Docker images
+
+on:
+  # release-please creates releases with GITHUB_TOKEN, which doesn't trigger
+  # `release: published` events. Instead, watch for the manifest update that
+  # release-please always commits when merging a release PR.
+  push:
+    branches: [main]
+    paths:
+      - '.release-please-manifest.json'
+    # release-please also pushes a v* tag on release; building on it makes the
+    # semver image tags below actually emit (a branch ref emits none).
+    tags:
+      - 'v*'
+  release:
+    types: [published]
+  workflow_dispatch:
+
+# Serialize publish+deploy so two quick merges can't race to mutate `latest`
+# or trigger overlapping redeploys. Never cancel an in-flight deploy.
+concurrency:
+  group: publish-deploy
+  cancel-in-progress: false
+
+# Least privilege by default; publish jobs opt into more below.
+permissions:
+  contents: read
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/box33
+
+jobs:
+  publish-api:
+    name: 🐳 Publish API image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+      id-token: write # keyless cosign signing via GitHub OIDC
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v7.0.0
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v4.4.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve release version (from release-please manifest)
+        id: ver
+        # The v* tag release-please pushes with GITHUB_TOKEN does NOT trigger
+        # workflows, so type=semver (which needs a tag ref) never emits on the
+        # real release path. Read the version from the manifest and add it as an
+        # explicit raw tag so a deploy maps to a human-readable semver too.
+        run: |
+          V=$(node -p "require('./.release-please-manifest.json')['.']" 2>/dev/null || echo "")
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+          echo "Resolved version: ${V:-<none>}"
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v6.2.0
+        with:
+          images: ${{ env.IMAGE_PREFIX }}-api
+          tags: |
+            type=sha,format=long
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=${{ steps.ver.outputs.version }},enable=${{ steps.ver.outputs.version != '' }}
+            type=raw,value=latest
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4.2.0
+
+      # SCAN BEFORE PUSH: build locally, scan, and only push if clean — so a
+      # vulnerable image never reaches the registry.
+      - name: Build (local, for scan)
+        uses: docker/build-push-action@v7.3.0
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          push: false
+          load: true
+          tags: box33-api:scan
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Scan image for vulnerabilities (fail on HIGH/CRITICAL)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: box33-api:scan
+          format: table
+          exit-code: '1'
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          trivyignores: .trivyignore
+
+      - name: Push (with provenance + SBOM attestations)
+        id: push
+        uses: docker/build-push-action@v7.3.0
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          provenance: mode=max
+          sbom: true
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+      - name: Sign image (keyless)
+        env:
+          DIGEST: ${{ steps.push.outputs.digest }}
+        # OCI refs must be lowercase; the owner (github.repository_owner) may be
+        # mixed-case, so lowercase the whole prefix before cosign parses it.
+        run: cosign sign --yes "${IMAGE_PREFIX,,}-api@${DIGEST}"
+
+  publish-web:
+    name: 🐳 Publish Web image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v7.0.0
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v4.4.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve release version (from release-please manifest)
+        id: ver
+        run: |
+          V=$(node -p "require('./.release-please-manifest.json')['.']" 2>/dev/null || echo "")
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+          echo "Resolved version: ${V:-<none>}"
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v6.2.0
+        with:
+          images: ${{ env.IMAGE_PREFIX }}-web
+          tags: |
+            type=sha,format=long
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=${{ steps.ver.outputs.version }},enable=${{ steps.ver.outputs.version != '' }}
+            type=raw,value=latest
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4.2.0
+
+      - name: Build (local, for scan)
+        uses: docker/build-push-action@v7.3.0
+        with:
+          context: .
+          file: apps/web/Dockerfile
+          push: false
+          load: true
+          tags: box33-web:scan
+          build-args: |
+            API_URL=http://api:3001
+            NEXT_PUBLIC_SITE_URL=https://placeholder.example.com
+            NEXT_PUBLIC_SITE_NAME=BOX33
+            NEXT_PUBLIC_DEFAULT_LOCALE=es
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Scan image for vulnerabilities (fail on HIGH/CRITICAL)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: box33-web:scan
+          format: table
+          exit-code: '1'
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          trivyignores: .trivyignore
+
+      - name: Push (with provenance + SBOM attestations)
+        id: push
+        uses: docker/build-push-action@v7.3.0
+        with:
+          context: .
+          file: apps/web/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            API_URL=http://api:3001
+            NEXT_PUBLIC_SITE_URL=https://placeholder.example.com
+            NEXT_PUBLIC_SITE_NAME=BOX33
+            NEXT_PUBLIC_DEFAULT_LOCALE=es
+          cache-from: type=gha
+          provenance: mode=max
+          sbom: true
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+      - name: Sign image (keyless)
+        env:
+          DIGEST: ${{ steps.push.outputs.digest }}
+        run: cosign sign --yes "${IMAGE_PREFIX,,}-web@${DIGEST}"
+
+  # ── Deploy ────────────────────────────────────────────────────────────────
+  # API deploys FIRST (its entrypoint runs migrations); web only deploys after a
+  # HEALTHY API, so it never talks to a not-yet-migrated schema. Each deploy
+  # first VERIFIES the cosign signature of the exact digest it's about to ship.
+
+  deploy-api:
+    name: 🚀 Deploy API to Coolify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: publish-api
+    permissions:
+      contents: read
+      packages: read # cosign verify pulls the image + signature from ghcr.io
+    steps:
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v4.4.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install cosign
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+      - name: Verify image signature (provenance gate)
+        env:
+          DIGEST: ${{ needs.publish-api.outputs.digest }}
+        run: |
+          cosign verify \
+            --certificate-identity-regexp "^https://github.com/${{ github.repository }}/.github/workflows/publish.yml@.*" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            "${IMAGE_PREFIX,,}-api@${DIGEST}"
+
+      - name: Trigger Coolify API redeploy
+        env:
+          TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+          WEBHOOK: ${{ secrets.COOLIFY_API_DEPLOY_WEBHOOK }}
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X GET \
+            -H "Authorization: Bearer $TOKEN" "$WEBHOOK")
+          echo "Coolify API response: $STATUS"
+          if [ "$STATUS" -lt 200 ] || [ "$STATUS" -ge 300 ]; then
+            echo "❌ Coolify API deploy webhook failed with status $STATUS"
+            exit 1
+          fi
+          echo "✅ Coolify API redeploy triggered"
+
+      - name: Wait for API health (post-deploy gate)
+        # The webhook returns instantly; poll the public readiness endpoint so a
+        # crash-looping / un-migrated container fails the job instead of shipping
+        # green. FAIL CLOSED if the health URL isn't configured on a real deploy.
+        env:
+          HEALTH_URL: ${{ secrets.COOLIFY_API_HEALTH_URL }}
+        run: |
+          if [ -z "$HEALTH_URL" ]; then
+            echo "❌ COOLIFY_API_HEALTH_URL is not set — cannot verify the deploy. Failing closed."
+            echo "   Set it to the public https://…/api/health/ready URL."
+            exit 1
+          fi
+          echo "Polling $HEALTH_URL …"
+          for i in $(seq 1 30); do
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" "$HEALTH_URL" || true)
+            if [ "$CODE" = "200" ]; then echo "✅ API healthy (attempt $i)"; exit 0; fi
+            echo "  attempt $i: got $CODE, retrying in 10s"
+            sleep 10
+          done
+          echo "❌ API never became healthy"
+          exit 1
+
+  deploy-web:
+    name: 🚀 Deploy Web to Coolify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Require BOTH the web image AND a successful API deploy+health. Default job
+    # gating (no if:) means a skipped/failed deploy-api blocks web — web must
+    # never ship ahead of a broken or un-migrated API.
+    needs: [publish-web, deploy-api]
+    permissions:
+      contents: read
+      packages: read # cosign verify pulls the image + signature from ghcr.io
+    steps:
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v4.4.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install cosign
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+      - name: Verify image signature (provenance gate)
+        env:
+          DIGEST: ${{ needs.publish-web.outputs.digest }}
+        run: |
+          cosign verify \
+            --certificate-identity-regexp "^https://github.com/${{ github.repository }}/.github/workflows/publish.yml@.*" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            "${IMAGE_PREFIX,,}-web@${DIGEST}"
+
+      - name: Trigger Coolify Web redeploy
+        env:
+          TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+          WEBHOOK: ${{ secrets.COOLIFY_WEB_DEPLOY_WEBHOOK }}
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X GET \
+            -H "Authorization: Bearer $TOKEN" "$WEBHOOK")
+          echo "Coolify Web response: $STATUS"
+          if [ "$STATUS" -lt 200 ] || [ "$STATUS" -ge 300 ]; then
+            echo "❌ Coolify Web deploy webhook failed with status $STATUS"
+            exit 1
+          fi
+          echo "✅ Coolify Web redeploy triggered"
+
+      - name: Wait for Web health (post-deploy gate)
+        env:
+          HEALTH_URL: ${{ secrets.COOLIFY_WEB_HEALTH_URL }}
+        run: |
+          if [ -z "$HEALTH_URL" ]; then
+            echo "❌ COOLIFY_WEB_HEALTH_URL is not set — cannot verify the deploy. Failing closed."
+            exit 1
+          fi
+          echo "Polling $HEALTH_URL …"
+          for i in $(seq 1 30); do
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" "$HEALTH_URL" || true)
+            if [ "$CODE" = "200" ]; then echo "✅ Web healthy (attempt $i)"; exit 0; fi
+            echo "  attempt $i: got $CODE, retrying in 10s"
+            sleep 10
+          done
+          echo "❌ Web never became healthy"
+          exit 1

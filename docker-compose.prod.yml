@@ -39,7 +39,10 @@ services:
     networks: [backend]
 
   api:
-    image: ${API_IMAGE:-ghcr.io/juandagarc/box33-api:latest}
+    image: ${API_IMAGE:-box33-api:latest}
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
     restart: always
     environment:
       NODE_ENV: production
@@ -79,7 +82,15 @@ services:
     networks: [backend]
 
   web:
-    image: ${WEB_IMAGE:-ghcr.io/juandagarc/box33-web:latest}
+    image: ${WEB_IMAGE:-box33-web:latest}
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        API_URL: http://api:3001
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?NEXT_PUBLIC_SITE_URL is required}
+        NEXT_PUBLIC_SITE_NAME: ${NEXT_PUBLIC_SITE_NAME:-BOX33}
+        NEXT_PUBLIC_DEFAULT_LOCALE: ${NEXT_PUBLIC_DEFAULT_LOCALE:-es}
     restart: always
     environment:
       NODE_ENV: production

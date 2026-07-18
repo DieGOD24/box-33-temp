@@ -5,7 +5,6 @@ import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { LEAD_GOALS, type LeadGoal } from '@box33/types'
 import { Link } from '@/i18n/navigation'
-import { createLead } from './actions'
 
 const LABEL =
   'block font-condensed text-xs font-semibold uppercase tracking-[2px] text-bone/60 mb-[5px]'
@@ -25,9 +24,14 @@ export function PreRegisterForm() {
     e.preventDefault()
     startTransition(async () => {
       if (name.trim().length >= 2 && phone.trim().length >= 7) {
-        const result = await createLead({ name: name.trim(), phone: phone.trim(), goal })
-        if (!result.ok) {
-          toast.error(result.message ?? tCommon('error'))
+        const res = await fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name.trim(), phone: phone.trim(), goal }),
+        })
+        if (!res.ok) {
+          const data = (await res.json().catch(() => ({}))) as { message?: string }
+          toast.error(data.message ?? tCommon('error'))
           return
         }
       }

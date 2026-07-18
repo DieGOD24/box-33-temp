@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { Link } from '@/i18n/navigation'
-import { requireSession } from '@/lib/auth/session'
+import { requireAuth } from '@/lib/auth/session'
 import { logout } from '@/lib/auth/actions'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 
@@ -14,7 +14,7 @@ export default async function AdminDashboardLayout({
 }) {
   const { locale } = await params
   setRequestLocale(locale)
-  await requireSession()
+  await requireAuth()
   const t = await getTranslations('admin.nav')
 
   return (

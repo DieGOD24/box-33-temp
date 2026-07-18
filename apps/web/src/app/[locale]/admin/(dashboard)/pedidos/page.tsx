@@ -1,5 +1,6 @@
+import { Suspense } from 'react'
 import { getLocale, getTranslations, setRequestLocale } from 'next-intl/server'
-import { requireSession } from '@/lib/auth/session'
+import { requireAuth } from '@/lib/auth/session'
 import { getOrders, getPayments } from '@/lib/api/admin'
 import { formatCOP, formatDateTime } from '@/lib/format'
 import { ADMIN_CARD, ADMIN_SUBTITLE, ADMIN_TITLE } from '@/components/admin/ui'
@@ -17,7 +18,7 @@ export default async function OrdersAdminPage({
   setRequestLocale(locale)
   const sp = await searchParams
   const page = Math.max(1, parseInt(sp.pagina ?? '1', 10) || 1)
-  const token = await requireSession()
+  const token = await requireAuth()
   const [orders, payments, t, currentLocale] = await Promise.all([
     getOrders(token, page),
     getPayments(token, 1),
@@ -97,7 +98,9 @@ export default async function OrdersAdminPage({
             </table>
           </div>
         )}
-        <AdminPager page={orders.page} pages={orders.pages} />
+        <Suspense fallback={null}>
+          <AdminPager page={orders.page} pages={orders.pages} />
+        </Suspense>
       </div>
 
       <div className={ADMIN_CARD}>

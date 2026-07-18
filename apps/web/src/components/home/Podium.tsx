@@ -13,6 +13,12 @@ const MEDAL: Record<number, { color: string; height: number }> = {
 /** Podium visual order: silver, gold, bronze (gold center + tallest). */
 const DISPLAY_ORDER: Array<1 | 2 | 3> = [2, 1, 3]
 
+// Built once at module load rather than on every render (see lib/format.ts).
+const MONTH = {
+  'en-US': new Intl.DateTimeFormat('en-US', { month: 'long' }),
+  'es-CO': new Intl.DateTimeFormat('es-CO', { month: 'long' }),
+} as const
+
 function initials(name: string): string {
   return name
     .split(/\s+/)
@@ -67,10 +73,7 @@ function PodiumPlace({ entry, photoAlt }: { entry: PodiumEntry; photoAlt: string
 export async function Podium({ podium, locale }: { podium: PodiumData; locale: string }) {
   const t = await getTranslations('podium')
   const month =
-    podium.month ||
-    new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'es-CO', { month: 'long' }).format(
-      new Date()
-    )
+    podium.month || MONTH[locale === 'en' ? 'en-US' : 'es-CO'].format(new Date())
   const byPlace = new Map(podium.entries.map((e) => [e.place, e]))
 
   return (
@@ -129,9 +132,9 @@ export async function Podium({ podium, locale }: { podium: PodiumData; locale: s
               {t('mentions')}
             </p>
             <div className="flex flex-wrap gap-3">
-              {podium.mentions.map((mention, i) => (
+              {podium.mentions.map((mention) => (
                 <div
-                  key={`${mention.name}-${i}`}
+                  key={`${mention.name}-${mention.achievement}`}
                   className="border-bone/[.12] bg-carbon flex items-center gap-2.5 border px-4 py-2.5"
                 >
                   <Bolt width={9} height={14} fill="#C9A648" />

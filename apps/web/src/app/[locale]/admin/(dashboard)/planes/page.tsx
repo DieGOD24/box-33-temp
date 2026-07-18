@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-import { requireSession } from '@/lib/auth/session'
+import { requireAuth } from '@/lib/auth/session'
 import { getAdminPlans } from '@/lib/api/admin'
 import { ADMIN_SUBTITLE, ADMIN_TITLE } from '@/components/admin/ui'
 import { PlanForm } from '@/components/admin/PlanForm'
@@ -7,7 +7,7 @@ import { PlanForm } from '@/components/admin/PlanForm'
 export default async function PlansAdminPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   setRequestLocale(locale)
-  const token = await requireSession()
+  const token = await requireAuth()
   const [plans, t] = await Promise.all([getAdminPlans(token), getTranslations('admin.plans')])
 
   return (

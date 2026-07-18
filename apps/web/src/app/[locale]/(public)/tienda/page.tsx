@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import type { ProductCategory, ProductGender } from '@box33/types'
 import { getProducts, getSiteContent } from '@/lib/api/queries'
@@ -79,7 +80,9 @@ export default async function StorePage({
             </span>
           </div>
           <div className="from-frame mt-[26px] h-2.5 rounded-[5px] bg-gradient-to-b to-[#23241c] shadow-[0_3px_8px_rgba(0,0,0,.5)]" />
-          <Filters />
+          <Suspense fallback={<div className="border-bone/10 border-b py-[22px]" />}>
+            <Filters />
+          </Suspense>
         </div>
       </section>
 
@@ -97,7 +100,9 @@ export default async function StorePage({
                   />
                 ))}
               </div>
-              <Pagination page={result.page} pages={result.pages} />
+              <Suspense fallback={null}>
+                <Pagination page={result.page} pages={result.pages} />
+              </Suspense>
               <p className="font-condensed text-bone/45 mt-3.5 text-center text-[15px] tracking-[2px] uppercase">
                 {t('pageInfo', {
                   from,

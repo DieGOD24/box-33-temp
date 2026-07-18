@@ -14,6 +14,8 @@ export async function Wod({
   locale: string
 }) {
   const t = await getTranslations('wod')
+  // Deterministic per request in a Server Component; hoisted out of JSX.
+  const today = new Date()
 
   return (
     <section id="wod" className="px-[clamp(20px,5vw,64px)] py-[clamp(64px,9vw,110px)]">
@@ -44,8 +46,11 @@ export async function Wod({
               <span className="font-marker text-olive-deep text-[clamp(20px,2.4vw,26px)]">
                 {wod.title}
               </span>
-              <span className="font-condensed text-sm font-bold tracking-[2px] text-[#8a8a80] uppercase">
-                {formatLongDate(new Date(), locale)}
+              <span
+                className="font-condensed text-sm font-bold tracking-[2px] text-[#8a8a80] uppercase"
+                suppressHydrationWarning
+              >
+                {formatLongDate(today, locale)}
               </span>
             </div>
             <pre className="font-marker m-0 text-[clamp(19px,2.3vw,25px)] leading-[1.65] whitespace-pre-wrap text-[#26271f]">

@@ -8,7 +8,7 @@ export async function Marquee() {
   const track = (ariaHidden: boolean) => (
     <div className="flex items-center py-3" aria-hidden={ariaHidden}>
       {items.map((item, i) => (
-        <span key={i} className="flex items-center">
+        <span key={item} className="flex items-center">
           <span
             className={`font-condensed px-[26px] text-base font-semibold tracking-[3px] uppercase ${
               i % 2 === 0 ? 'text-moss' : 'text-bone'

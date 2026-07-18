@@ -18,8 +18,8 @@ const parseTimes = (raw: string) =>
 export function ScheduleForm({ initial }: { initial: Schedule }) {
   const t = useTranslations('admin.schedule')
   const tCommon = useTranslations('common')
-  const [morningRaw, setMorningRaw] = useState(initial.morning.join(','))
-  const [eveningRaw, setEveningRaw] = useState(initial.evening.join(','))
+  const [morningRaw, setMorningRaw] = useState(() => initial.morning.join(','))
+  const [eveningRaw, setEveningRaw] = useState(() => initial.evening.join(','))
   const [openBoxStart, setOpenBoxStart] = useState(initial.openBox.start)
   const [openBoxEnd, setOpenBoxEnd] = useState(initial.openBox.end)
   const [pending, startTransition] = useTransition()
@@ -101,18 +101,18 @@ export function ScheduleForm({ initial }: { initial: Schedule }) {
           {t('preview')}
         </p>
         <div className="flex flex-wrap items-center gap-x-[18px] gap-y-2.5">
-          {morning.map((time, i) => (
+          {morning.map((time) => (
             <span
-              key={`m-${i}`}
+              key={`m-${time}`}
               className="font-led text-ember text-[22px] font-bold tracking-[2px] [text-shadow:0_0_12px_rgba(255,90,60,.6)]"
             >
               {time}
             </span>
           ))}
           <span className="font-led text-olive text-[22px] font-semibold">/</span>
-          {evening.map((time, i) => (
+          {evening.map((time) => (
             <span
-              key={`e-${i}`}
+              key={`e-${time}`}
               className="font-led text-ember text-[22px] font-bold tracking-[2px] [text-shadow:0_0_12px_rgba(255,90,60,.6)]"
             >
               {time}

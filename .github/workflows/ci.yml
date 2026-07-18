@@ -308,6 +308,15 @@ jobs:
       - name: Validate docker-compose.yml
         run: docker compose config --quiet
       - name: Validate docker-compose.prod.yml
+        # The prod compose intentionally requires secrets at runtime (${VAR:?}),
+        # so `config` needs throwaway placeholders to validate its structure.
+        env:
+          DB_PASSWORD: validate-placeholder
+          JWT_SECRET: validate-placeholder
+          ADMIN_EMAIL: validate@example.com
+          ADMIN_PASSWORD: validate-placeholder
+          REVALIDATION_SECRET: validate-placeholder
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
         run: docker compose -f docker-compose.prod.yml config --quiet
 
   api-migration-drift:

@@ -4,6 +4,24 @@ import { useLocale, useTranslations } from 'next-intl'
 import { Link, usePathname } from '@/i18n/navigation'
 import { cn } from '@/lib/cn'
 
+// Intl formatters are expensive to build, so construct them once at module load
+// instead of on every render. The pinned timeZone keeps SSR and client output on
+// the same calendar day (the site is Colombian: es-CO / COP).
+const TODAY_FORMAT = {
+  'en-US': new Intl.DateTimeFormat('en-US', {
+    weekday: 'short',
+    day: '2-digit',
+    month: 'short',
+    timeZone: 'America/Bogota',
+  }),
+  'es-CO': new Intl.DateTimeFormat('es-CO', {
+    weekday: 'short',
+    day: '2-digit',
+    month: 'short',
+    timeZone: 'America/Bogota',
+  }),
+} as const
+
 const SECTIONS = [
   { slug: 'resumen', key: 'overview' },
   { slug: 'pizarra', key: 'wod' },
@@ -22,11 +40,7 @@ export function AdminSidebar() {
   const locale = useLocale()
   const pathname = usePathname()
 
-  const today = new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'es-CO', {
-    weekday: 'short',
-    day: '2-digit',
-    month: 'short',
-  }).format(new Date())
+  const today = TODAY_FORMAT[locale === 'en' ? 'en-US' : 'es-CO'].format(new Date())
 
   return (
     <nav className="border-bone/10 sticky top-[82px] flex w-[200px] min-w-[170px] flex-none flex-col gap-1 border bg-[#181912] p-2.5">

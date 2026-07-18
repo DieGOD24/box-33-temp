@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-import { requireSession } from '@/lib/auth/session'
+import { requireAuth } from '@/lib/auth/session'
 import { getAdminProducts } from '@/lib/api/admin'
 import { ADMIN_SUBTITLE, ADMIN_TITLE } from '@/components/admin/ui'
 import { Inventory } from '@/components/admin/Inventory'
@@ -11,7 +11,7 @@ export default async function InventoryAdminPage({
 }) {
   const { locale } = await params
   setRequestLocale(locale)
-  const token = await requireSession()
+  const token = await requireAuth()
   const [products, t] = await Promise.all([
     getAdminProducts(token),
     getTranslations('admin.inventory'),

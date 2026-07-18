@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-import { requireSession } from '@/lib/auth/session'
+import { requireAuth } from '@/lib/auth/session'
 import { getAdminContent } from '@/lib/api/admin'
 import { ADMIN_SUBTITLE, ADMIN_TITLE } from '@/components/admin/ui'
 import { PodiumForm } from '@/components/admin/PodiumForm'
@@ -7,7 +7,7 @@ import { PodiumForm } from '@/components/admin/PodiumForm'
 export default async function PodiumAdminPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   setRequestLocale(locale)
-  await requireSession()
+  await requireAuth()
   const [content, t] = await Promise.all([getAdminContent(), getTranslations('admin.podium')])
 
   return (

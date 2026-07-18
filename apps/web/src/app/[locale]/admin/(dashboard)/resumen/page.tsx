@@ -1,6 +1,6 @@
 import { getLocale, getTranslations, setRequestLocale } from 'next-intl/server'
 import { Link } from '@/i18n/navigation'
-import { requireSession } from '@/lib/auth/session'
+import { requireAuth } from '@/lib/auth/session'
 import { getStats } from '@/lib/api/admin'
 import { formatCOP, formatDateTime } from '@/lib/format'
 import { ADMIN_CARD, ADMIN_TITLE } from '@/components/admin/ui'
@@ -17,7 +17,7 @@ const QUICK_LINKS = [
 export default async function OverviewPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   setRequestLocale(locale)
-  const token = await requireSession()
+  const token = await requireAuth()
   const [stats, t, tGoals, currentLocale] = await Promise.all([
     getStats(token),
     getTranslations('admin.overview'),

@@ -1,5 +1,6 @@
+import { Suspense } from 'react'
 import { getLocale, getTranslations, setRequestLocale } from 'next-intl/server'
-import { requireSession } from '@/lib/auth/session'
+import { requireAuth } from '@/lib/auth/session'
 import { getLeads } from '@/lib/api/admin'
 import { getSiteContent } from '@/lib/api/queries'
 import { buildWaLink } from '@/lib/wa'
@@ -19,7 +20,7 @@ export default async function LeadsAdminPage({
   setRequestLocale(locale)
   const sp = await searchParams
   const page = Math.max(1, parseInt(sp.pagina ?? '1', 10) || 1)
-  const token = await requireSession()
+  const token = await requireAuth()
   const [leads, content, t, tGoals, currentLocale] = await Promise.all([
     getLeads(token, page),
     getSiteContent(),
@@ -78,7 +79,9 @@ export default async function LeadsAdminPage({
             </table>
           </div>
         )}
-        <AdminPager page={leads.page} pages={leads.pages} />
+        <Suspense fallback={null}>
+          <AdminPager page={leads.page} pages={leads.pages} />
+        </Suspense>
       </div>
     </div>
   )

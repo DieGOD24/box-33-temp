@@ -4,7 +4,7 @@ import { getLocale } from 'next-intl/server'
 import type { AuthResponse } from '@box33/types'
 import { redirect } from '@/i18n/navigation'
 import { ApiError, apiFetch } from '@/lib/api/client'
-import { clearSessionCookie, setSessionCookie } from './session'
+import { clearSessionCookie, requireAuth, setSessionCookie } from './session'
 
 export interface LoginState {
   error: boolean
@@ -33,6 +33,9 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
 }
 
 export async function logout(): Promise<void> {
+  // Verify the caller is authenticated before mutating session state
+  // (redirects to the login screen if there's no valid session).
+  await requireAuth()
   await clearSessionCookie()
   const locale = await getLocale()
   redirect({ href: '/admin', locale })

@@ -11,7 +11,7 @@ export async function getSessionToken(): Promise<string | null> {
 }
 
 /** Returns the API JWT or redirects to the login screen. */
-export async function requireSession(): Promise<string> {
+export async function requireAuth(): Promise<string> {
   const token = await getSessionToken()
   if (!token) {
     const locale = await getLocale()

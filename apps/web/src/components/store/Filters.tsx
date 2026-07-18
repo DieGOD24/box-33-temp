@@ -14,7 +14,7 @@ export function Filters() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const [q, setQ] = useState(searchParams.get('q') ?? '')
+  const [q, setQ] = useState(() => searchParams.get('q') ?? '')
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const genero = searchParams.get('genero') ?? 'todo'

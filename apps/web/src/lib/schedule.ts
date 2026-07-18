@@ -20,17 +20,16 @@ interface Slot {
 const CLASS_DURATION_MIN = 60
 
 function parseSlots(times: string[], pm: boolean): Slot[] {
-  return times
-    .map((t) => t.trim())
-    .filter(Boolean)
-    .map((t) => {
-      const [h, m] = t.split(':')
-      let hh = parseInt(h ?? '0', 10) || 0
-      const mm = parseInt(m ?? '0', 10) || 0
-      // Evening times are written as 12h ('3:30' → 15:30).
-      if (pm && hh < 12) hh += 12
-      return { hh, mm }
-    })
+  return times.flatMap((raw) => {
+    const t = raw.trim()
+    if (!t) return []
+    const [h, m] = t.split(':')
+    let hh = parseInt(h ?? '0', 10) || 0
+    const mm = parseInt(m ?? '0', 10) || 0
+    // Evening times are written as 12h ('3:30' → 15:30).
+    if (pm && hh < 12) hh += 12
+    return [{ hh, mm }]
+  })
 }
 
 function parseHHMM(value: string): number {
@@ -102,9 +101,4 @@ export function nextClassInfo(schedule: Schedule, now: Date): NextClassInfo {
     nextAt: target,
     boxStatus: inClass ? 'in-class' : inOpenBox ? 'open-box' : 'closed',
   }
-}
-
-/** '5:30' + false → '5:30 AM'; '3:30' + true → '3:30 PM' (display only). */
-export function to12h(time: string, pm: boolean): string {
-  return `${time} ${pm ? 'PM' : 'AM'}`
 }

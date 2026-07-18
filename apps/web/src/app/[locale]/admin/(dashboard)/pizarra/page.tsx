@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-import { requireSession } from '@/lib/auth/session'
+import { requireAuth } from '@/lib/auth/session'
 import { getAdminContent } from '@/lib/api/admin'
 import { ADMIN_SUBTITLE, ADMIN_TITLE } from '@/components/admin/ui'
 import { WodForm } from '@/components/admin/WodForm'
@@ -7,7 +7,7 @@ import { WodForm } from '@/components/admin/WodForm'
 export default async function WodAdminPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   setRequestLocale(locale)
-  await requireSession()
+  await requireAuth()
   const [content, t] = await Promise.all([getAdminContent(), getTranslations('admin.wod')])
 
   return (

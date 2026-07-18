@@ -20,7 +20,7 @@ const MEDAL_TEXT: Record<number, string> = {
 }
 
 /** 'Juan S. · 18 WODs, Sara P. · +12 kg' ⇄ [{name, achievement}] */
-export function parseMentions(raw: string): Array<{ name: string; achievement: string }> {
+function parseMentions(raw: string): Array<{ name: string; achievement: string }> {
   return raw
     .split(',')
     .map((s) => s.trim())
@@ -32,7 +32,7 @@ export function parseMentions(raw: string): Array<{ name: string; achievement: s
     .filter((m) => m.name.length > 0)
 }
 
-export function joinMentions(mentions: Array<{ name: string; achievement: string }>): string {
+function joinMentions(mentions: Array<{ name: string; achievement: string }>): string {
   return mentions.map((m) => (m.achievement ? `${m.name} · ${m.achievement}` : m.name)).join(', ')
 }
 
@@ -92,7 +92,7 @@ export function PodiumForm({ initial }: { initial: Podium }) {
   const t = useTranslations('admin.podium')
   const tCommon = useTranslations('common')
   const [month, setMonth] = useState(initial.month)
-  const [entries, setEntries] = useState<PodiumEntry[]>(
+  const [entries, setEntries] = useState<PodiumEntry[]>(() =>
     [1, 2, 3].map(
       (place) =>
         initial.entries.find((e) => e.place === place) ?? {
@@ -103,7 +103,7 @@ export function PodiumForm({ initial }: { initial: Podium }) {
         }
     )
   )
-  const [mentionsRaw, setMentionsRaw] = useState(joinMentions(initial.mentions))
+  const [mentionsRaw, setMentionsRaw] = useState(() => joinMentions(initial.mentions))
   const [pending, startTransition] = useTransition()
 
   const patchEntry = (place: number, patch: Partial<PodiumEntry>) =>

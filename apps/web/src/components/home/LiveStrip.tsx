@@ -5,6 +5,29 @@ import { useLocale, useTranslations } from 'next-intl'
 import type { Schedule } from '@box33/types'
 import { nextClassInfo } from '@/lib/schedule'
 
+// Built once at module load rather than on every render (see lib/format.ts).
+// Explicit timeZone keeps the rendered time deterministic: the box is in
+// Colombia and the schedule is authored in Bogotá wall-clock time.
+const TIME_FMT = {
+  'en-US': new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: 'America/Bogota',
+  }),
+  'es-CO': new Intl.DateTimeFormat('es-CO', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: 'America/Bogota',
+  }),
+} as const
+
+const WEEKDAY_FMT = {
+  'en-US': new Intl.DateTimeFormat('en-US', { weekday: 'long', timeZone: 'America/Bogota' }),
+  'es-CO': new Intl.DateTimeFormat('es-CO', { weekday: 'long', timeZone: 'America/Bogota' }),
+} as const
+
 export function LiveStrip({ schedule }: { schedule: Schedule }) {
   const t = useTranslations('live')
   const locale = useLocale()
@@ -35,19 +58,14 @@ export function LiveStrip({ schedule }: { schedule: Schedule }) {
 
   let nextLabel = t('checkSchedule')
   if (info?.nextAt) {
-    const time = new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'es-CO', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    }).format(info.nextAt)
+    const key = locale === 'en' ? 'en-US' : 'es-CO'
+    const time = TIME_FMT[key].format(info.nextAt)
     const day =
       info.dayOffset === 0
         ? t('today')
         : info.dayOffset === 1
           ? t('tomorrow')
-          : new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'es-CO', {
-              weekday: 'long',
-            }).format(info.nextAt)
+          : WEEKDAY_FMT[key].format(info.nextAt)
     nextLabel = `${day} · ${time}`
   }
 

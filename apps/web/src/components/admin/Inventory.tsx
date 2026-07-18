@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useMemo, useRef, useState, useTransition } from 'react'
+import { useId, useMemo, useRef, useState, useTransition } from 'react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import type { CreateProductInput, Product, ProductCategory, ProductGender } from '@box33/types'
@@ -47,10 +47,12 @@ function ImagePicker({
   imageUrl,
   onUploaded,
   label,
+  inputId,
 }: {
   imageUrl: string | null
   onUploaded: (url: string) => void
   label: string
+  inputId?: string
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
@@ -84,6 +86,7 @@ function ImagePicker({
       </button>
       <input
         ref={inputRef}
+        id={inputId}
         type="file"
         accept="image/jpeg,image/png,image/webp,image/avif"
         hidden
@@ -108,21 +111,28 @@ function ProductEditor({
 }) {
   const t = useTranslations('admin.inventory')
   const tStore = useTranslations('store')
+  const fieldId = useId()
 
   return (
     <div className={ADMIN_CARD}>
       <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3.5">
         <div className="col-span-full">
-          <label className={ADMIN_LABEL}>{t('nameLabel')}</label>
+          <label htmlFor={`${fieldId}-name`} className={ADMIN_LABEL}>
+            {t('nameLabel')}
+          </label>
           <input
+            id={`${fieldId}-name`}
             value={draft.name}
             onChange={(e) => setDraft({ ...draft, name: e.target.value })}
             className={ADMIN_INPUT}
           />
         </div>
         <div>
-          <label className={ADMIN_LABEL}>{t('genderLabel')}</label>
+          <label htmlFor={`${fieldId}-gender`} className={ADMIN_LABEL}>
+            {t('genderLabel')}
+          </label>
           <select
+            id={`${fieldId}-gender`}
             value={draft.gender}
             onChange={(e) => setDraft({ ...draft, gender: e.target.value as ProductGender })}
             className={ADMIN_INPUT}
@@ -132,8 +142,11 @@ function ProductEditor({
           </select>
         </div>
         <div>
-          <label className={ADMIN_LABEL}>{t('categoryLabel')}</label>
+          <label htmlFor={`${fieldId}-category`} className={ADMIN_LABEL}>
+            {t('categoryLabel')}
+          </label>
           <select
+            id={`${fieldId}-category`}
             value={draft.category}
             onChange={(e) => setDraft({ ...draft, category: e.target.value as ProductCategory })}
             className={ADMIN_INPUT}
@@ -146,8 +159,11 @@ function ProductEditor({
           </select>
         </div>
         <div>
-          <label className={ADMIN_LABEL}>{t('priceLabel')}</label>
+          <label htmlFor={`${fieldId}-price`} className={ADMIN_LABEL}>
+            {t('priceLabel')}
+          </label>
           <input
+            id={`${fieldId}-price`}
             value={draft.pesos}
             onChange={(e) => setDraft({ ...draft, pesos: e.target.value.replace(/[^0-9]/g, '') })}
             inputMode="numeric"
@@ -157,8 +173,11 @@ function ProductEditor({
           <p className="text-bone/40 mt-1 text-[11px]">{t('priceHelp')}</p>
         </div>
         <div>
-          <label className={ADMIN_LABEL}>{t('imageLabel')}</label>
+          <label htmlFor={`${fieldId}-image`} className={ADMIN_LABEL}>
+            {t('imageLabel')}
+          </label>
           <ImagePicker
+            inputId={`${fieldId}-image`}
             imageUrl={draft.imageUrl}
             onUploaded={(url) => setDraft({ ...draft, imageUrl: url })}
             label={t('uploadImage')}
